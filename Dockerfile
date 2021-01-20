@@ -1,9 +1,20 @@
-FROM ubuntu:16.04
+FROM python:3.7.7-slim
 
-RUN apt-get update && apt-get install -y python python-pip
+ENV PYTHONUNBUFFERED=1
 
-RUN pip install flask
+COPY * /opt/microservices/
+COPY requirements.txt /opt/microservices/
+RUN pip install --upgrade pip \
+  && pip install --upgrade pipenv\
+  && apt-get clean \
+  && apt-get update \
+  && apt install -y build-essential \
+  && apt install -y libmariadb3 libmariadb-dev \
+  && pip install --upgrade -r /opt/microservices/requirements.txt
 
-COPY app.py /opt/
+USER 1001
 
-ENTRYPOINT FLASK_APP=/opt/app.py flask run --host=0.0.0.0
+EXPOSE 8080
+WORKDIR /opt/microservices/
+
+CMD ["python", "app.py", "8080"]
