@@ -1,9 +1,9 @@
-FROM python:3.7-alpine
+FROM ubuntu:16.04
 
-COPY . /app
+RUN apt-get update && apt-get install -y python python-pip
 
-WORKDIR /app
+RUN pip install flask
 
-USER 1001
-EXPOSE 5000
-CMD ["python3", "/app/app.py"]
+COPY app.py /opt/
+
+ENTRYPOINT FLASK_APP=/opt/app.py flask run --host=0.0.0.0
